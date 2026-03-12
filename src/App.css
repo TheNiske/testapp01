@@ -503,15 +503,13 @@ li.dragging > * {
   opacity: 0;
 }
 
-/* Lift — item peels off the surface with weight and depth */
+/* Lift — depth via shadow and brightness only; no transform to avoid cursor offset */
 @keyframes liftUp {
   from {
-    transform: scale(1) translateY(0);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     filter: brightness(1);
   }
   to {
-    transform: scale(1.035) translateY(-4px);
     box-shadow:
       0 2px 4px rgba(0, 0, 0, 0.15),
       0 8px 16px rgba(0, 0, 0, 0.3),
