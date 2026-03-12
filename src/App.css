@@ -490,16 +490,10 @@ li.done span {
   cursor: grabbing;
 }
 
-/* Placeholder slot — shows a golden drop zone while dragging */
+/* Original slot — invisible but holds space so list doesn't jump */
 li.dragging {
-  background: var(--accent-dim);
-  border-color: transparent;
-  border-left-color: var(--accent);
-  opacity: 1;
-}
-
-li.dragging > * {
   opacity: 0;
+  pointer-events: none;
 }
 
 /* Floating copy that follows the cursor */
@@ -510,7 +504,6 @@ li.drag-overlay {
     0 2px 4px rgba(0, 0, 0, 0.2),
     0 8px 20px rgba(0, 0, 0, 0.35),
     0 0 0 1px rgba(201, 168, 76, 0.15);
-  transform: scale(1.018);
   cursor: grabbing;
   opacity: 1;
 }
