@@ -490,20 +490,40 @@ li.done span {
   cursor: grabbing;
 }
 
-/* Original slot — invisible but holds space so list doesn't jump */
+/* Original slot — ghost outline shows where item will land */
 li.dragging {
-  opacity: 0;
   pointer-events: none;
+  background: transparent;
+  border-color: var(--border);
+  border-left-color: var(--border);
+  box-shadow: none;
+}
+
+li.dragging > * {
+  opacity: 0;
+}
+
+/* Lift animation when picking up an item */
+@keyframes liftUp {
+  from {
+    transform: scale(1) rotate(0deg);
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.15);
+  }
+  to {
+    transform: scale(1.03) rotate(1.5deg);
+    box-shadow:
+      0 6px 12px rgba(0, 0, 0, 0.25),
+      0 18px 36px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(201, 168, 76, 0.25);
+  }
 }
 
 /* Floating copy that follows the cursor */
 li.drag-overlay {
+  animation: liftUp 0.2s cubic-bezier(0.34, 1.5, 0.64, 1) forwards;
   background: var(--surface-2);
   border-left-color: var(--accent);
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.2),
-    0 8px 20px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(201, 168, 76, 0.15);
   cursor: grabbing;
   opacity: 1;
 }

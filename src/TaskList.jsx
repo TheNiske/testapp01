@@ -64,8 +64,8 @@ function TaskList({ tasks, onToggle, onDelete, onReorder }) {
       {/* DragOverlay renders outside the list, on top of everything.
           It shows a floating copy of the dragged item while dragging. */}
       <DragOverlay dropAnimation={{
-        duration: 200,
-        easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+        duration: 320,
+        easing: 'cubic-bezier(0.34, 1.35, 0.64, 1)',
       }}>
         {activeTask ? (
           <TaskItem
