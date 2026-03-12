@@ -459,6 +459,43 @@ li.done span {
   background: transparent;
 }
 
+.drag-handle {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.3rem;
+  color: var(--border-light);
+  cursor: grab;
+  border-radius: 4px;
+  transition: color var(--transition);
+  touch-action: none;
+  transform: none;
+  box-shadow: none;
+  background: transparent;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+  flex-shrink: 0;
+}
+
+.drag-handle:hover {
+  color: var(--text-muted);
+  background: transparent;
+  transform: none;
+  box-shadow: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+li.dragging {
+  opacity: 0.4;
+  border-left-color: var(--accent);
+  background: var(--surface-2);
+}
+
 li button {
   background: transparent;
   color: var(--border-light);

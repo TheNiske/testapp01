@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { arrayMove } from '@dnd-kit/sortable'
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import { supabase } from './supabase'
 import AuthPage from './pages/AuthPage'
@@ -33,7 +34,7 @@ function App() {
     const { data, error } = await supabase
       .from('tasks')
       .select('*')
-      .order('created_at', { ascending: true })
+      .order('position', { ascending: true })
     if (!error) setTasks(data)
   }
 
@@ -49,7 +50,8 @@ function App() {
         text: input,
         done: false,
         user_id: session.user.id,
-        due_at: dueDate || null,   // null if no date selected
+        due_at: dueDate || null,
+        position: tasks.length,    // new tasks go to the end
       })
       .select()
       .single()
@@ -77,6 +79,22 @@ function App() {
     if (!error) setTasks(tasks.filter(t => t.id !== id))
   }
 
+  async function reorderTasks(activeId, overId) {
+    const oldIndex = tasks.findIndex(t => t.id === activeId)
+    const newIndex = tasks.findIndex(t => t.id === overId)
+    // arrayMove returns a new array with the item moved to the new index
+    const reordered = arrayMove(tasks, oldIndex, newIndex)
+
+    setTasks(reordered) // optimistic update — UI moves instantly
+
+    // Persist new positions to database for all tasks
+    await Promise.all(
+      reordered.map((task, index) =>
+        supabase.from('tasks').update({ position: index }).eq('id', task.id)
+      )
+    )
+  }
+
   async function signOut() {
     await supabase.auth.signOut()
     setTasks([])
@@ -96,12 +114,13 @@ function App() {
     addTask={addTask}
     toggleTask={toggleTask}
     deleteTask={deleteTask}
+    reorderTasks={reorderTasks}
     signOut={signOut}
     userEmail={session.user.email}
   />
 }
 
-function TaskApp({ tasks, input, setInput, dueDate, setDueDate, addTask, toggleTask, deleteTask, signOut, userEmail }) {
+function TaskApp({ tasks, input, setInput, dueDate, setDueDate, addTask, toggleTask, deleteTask, reorderTasks, signOut, userEmail }) {
   const location = useLocation()
 
   return (
@@ -141,10 +160,11 @@ function TaskApp({ tasks, input, setInput, dueDate, setDueDate, addTask, toggleT
             addTask={addTask}
             onToggle={toggleTask}
             onDelete={deleteTask}
+            onReorder={reorderTasks}
           />
         } />
         <Route path="/completed" element={
-          <CompletedPage tasks={tasks} onToggle={toggleTask} onDelete={deleteTask} />
+          <CompletedPage tasks={tasks} onToggle={toggleTask} onDelete={deleteTask} onReorder={reorderTasks} />
         } />
       </Routes>
     </div>
