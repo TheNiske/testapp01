@@ -1,51 +1,90 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+:root {
+  --bg: #111A13;
+  --surface: #192B1B;
+  --surface-2: #1F3422;
+  --border: #2B4030;
+  --border-light: #3A5440;
+  --text: #E2EEE3;
+  --text-muted: #6E9472;
+  --accent: #C9A84C;
+  --accent-dim: rgba(201, 168, 76, 0.12);
+  --danger: #D9705A;
+  --danger-dim: rgba(217, 112, 90, 0.12);
+  --done-text: #4A7050;
+  --radius: 8px;
+  --transition: 0.18s ease;
 }
 
-body {
-  font-family: system-ui, sans-serif;
-  background: #f5f5f5;
-  display: flex;
-  justify-content: center;
-  padding: 2rem;
-}
+/* ── App shell ─────────────────────────────── */
 
 .app {
-  background: white;
-  border-radius: 8px;
-  padding: 2rem;
   width: 100%;
-  max-width: 500px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  max-width: 520px;
+  animation: slideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-h1 {
-  margin-bottom: 1rem;
-  color: #333;
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ── Header ────────────────────────────────── */
+
+h1 {
+  font-family: 'Fraunces', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+h1::after {
+  content: '';
+  display: block;
+  width: 2.5rem;
+  height: 2px;
+  background: var(--accent);
+  margin-top: 0.7rem;
+  margin-bottom: 1.75rem;
+}
+
+/* ── Navigation ────────────────────────────── */
 
 nav {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 1rem;
+  gap: 0;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
 }
 
 nav a {
   text-decoration: none;
-  color: #666;
-  font-size: 0.9rem;
-  padding: 0.25rem 0;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.5rem 1.1rem 0.65rem;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color var(--transition), border-color var(--transition);
+}
+
+nav a:first-child {
+  padding-left: 0;
+}
+
+nav a:hover {
+  color: var(--text);
 }
 
 nav a.active {
-  color: #4f46e5;
-  font-weight: 600;
-  border-bottom: 2px solid #4f46e5;
+  color: var(--accent);
+  border-bottom-color: var(--accent);
 }
+
+/* ── Form ──────────────────────────────────── */
 
 form {
   display: flex;
@@ -55,68 +94,135 @@ form {
 
 input {
   flex: 1;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+input:focus {
+  border-color: var(--accent);
+  background: var(--surface-2);
+  box-shadow: 0 0 0 3px var(--accent-dim);
 }
 
 button {
-  padding: 0.5rem 1rem;
-  background: #4f46e5;
-  color: white;
+  padding: 0.75rem 1.35rem;
+  background: var(--accent);
+  color: #111A13;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   cursor: pointer;
-  font-size: 1rem;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  white-space: nowrap;
 }
 
 button:hover {
-  background: #4338ca;
+  background: #D4B55E;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(201, 168, 76, 0.3);
 }
+
+button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ── Task list ─────────────────────────────── */
 
 ul {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
 }
 
 li {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.75rem;
-  background: #f9f9f9;
-  border-radius: 4px;
-  border: 1px solid #eee;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border-light);
+  transition: border-color var(--transition), background var(--transition);
+  animation: fadeIn 0.22s ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+li:hover {
+  background: var(--surface-2);
+  border-left-color: var(--accent);
+}
+
+li.done {
+  border-left-color: var(--done-text);
+  opacity: 0.55;
 }
 
 li span {
-  cursor: pointer;
   flex: 1;
-  color: #333;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.4;
+  user-select: none;
 }
 
 li.done span {
   text-decoration: line-through;
-  color: #999;
+  color: var(--done-text);
 }
 
 li button {
   background: transparent;
-  color: #999;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8rem;
+  color: var(--border-light);
+  padding: 0.2rem 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  border-radius: 4px;
+  transform: none;
+  box-shadow: none;
+  transition: color var(--transition), background var(--transition);
 }
 
 li button:hover {
-  color: #e53e3e;
-  background: transparent;
+  background: var(--danger-dim);
+  color: var(--danger);
+  transform: none;
+  box-shadow: none;
 }
 
+/* ── Footer count ──────────────────────────── */
+
 p {
-  color: #666;
-  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
 }
