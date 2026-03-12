@@ -490,20 +490,29 @@ li.done span {
   cursor: grabbing;
 }
 
+/* Placeholder slot — shows a golden drop zone while dragging */
 li.dragging {
-  opacity: 0.3;
-  border-left-color: var(--border);
-  background: var(--surface);
+  background: var(--accent-dim);
+  border-color: transparent;
+  border-left-color: var(--accent);
+  opacity: 1;
 }
 
-/* The floating copy that follows the cursor */
+li.dragging > * {
+  opacity: 0;
+}
+
+/* Floating copy that follows the cursor */
 li.drag-overlay {
-  opacity: 1;
-  border-left-color: var(--accent);
   background: var(--surface-2);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
-  scale: 1.02;
+  border-left-color: var(--accent);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 8px 20px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(201, 168, 76, 0.15);
+  transform: scale(1.018);
   cursor: grabbing;
+  opacity: 1;
 }
 
 li button {
