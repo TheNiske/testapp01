@@ -7,42 +7,33 @@ import CompletedPage from './pages/CompletedPage'
 import './App.css'
 
 function App() {
-  // `session` holds the logged-in user's session, or null if logged out.
-  // This is the single source of truth for auth state.
-  const [session, setSession] = useState(undefined) // undefined = still loading
+  const [session, setSession] = useState(undefined)
   const [tasks, setTasks] = useState([])
   const [input, setInput] = useState('')
+  const [dueDate, setDueDate] = useState('')
 
-  // ── Auth: listen for login / logout events ──────────────────────────────
+  // ── Auth ─────────────────────────────────────────────────────────────────
   useEffect(() => {
-    // getSession checks if a session already exists (e.g. user refreshes page)
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
     })
-
-    // onAuthStateChange fires whenever the user signs in or out.
-    // It returns an `unsubscribe` function we call on cleanup.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
     })
-
     return () => subscription.unsubscribe()
   }, [])
 
-  // ── Tasks: fetch from database when session is available ────────────────
+  // ── Tasks: fetch on login ────────────────────────────────────────────────
   useEffect(() => {
     if (!session) return
     fetchTasks()
   }, [session])
 
   async function fetchTasks() {
-    // .select('*') fetches all columns.
-    // Supabase Row Level Security automatically filters to the logged-in user's tasks.
     const { data, error } = await supabase
       .from('tasks')
       .select('*')
       .order('created_at', { ascending: true })
-
     if (!error) setTasks(data)
   }
 
@@ -52,17 +43,21 @@ function App() {
     e.preventDefault()
     if (!input.trim()) return
 
-    // Insert a new row. user_id is set automatically by Supabase
-    // via the auth.uid() function in our RLS policy.
     const { data, error } = await supabase
       .from('tasks')
-      .insert({ text: input, done: false, user_id: session.user.id })
+      .insert({
+        text: input,
+        done: false,
+        user_id: session.user.id,
+        due_at: dueDate || null,   // null if no date selected
+      })
       .select()
       .single()
 
     if (!error) {
-      setTasks([...tasks, data]) // optimistically add to UI
+      setTasks([...tasks, data])
       setInput('')
+      setDueDate('')
     }
   }
 
@@ -72,21 +67,14 @@ function App() {
       .from('tasks')
       .update({ done: !task.done })
       .eq('id', id)
-
     if (!error) {
       setTasks(tasks.map(t => t.id === id ? { ...t, done: !t.done } : t))
     }
   }
 
   async function deleteTask(id) {
-    const { error } = await supabase
-      .from('tasks')
-      .delete()
-      .eq('id', id)
-
-    if (!error) {
-      setTasks(tasks.filter(t => t.id !== id))
-    }
+    const { error } = await supabase.from('tasks').delete().eq('id', id)
+    if (!error) setTasks(tasks.filter(t => t.id !== id))
   }
 
   async function signOut() {
@@ -96,16 +84,15 @@ function App() {
 
   // ── Render ───────────────────────────────────────────────────────────────
 
-  // Still checking session — render nothing to avoid flash
   if (session === undefined) return null
-
-  // Not logged in — show auth page
   if (!session) return <AuthPage />
 
   return <TaskApp
     tasks={tasks}
     input={input}
     setInput={setInput}
+    dueDate={dueDate}
+    setDueDate={setDueDate}
     addTask={addTask}
     toggleTask={toggleTask}
     deleteTask={deleteTask}
@@ -114,8 +101,7 @@ function App() {
   />
 }
 
-// Separated so App stays focused on auth/data logic
-function TaskApp({ tasks, input, setInput, addTask, toggleTask, deleteTask, signOut, userEmail }) {
+function TaskApp({ tasks, input, setInput, dueDate, setDueDate, addTask, toggleTask, deleteTask, signOut, userEmail }) {
   const location = useLocation()
 
   return (
@@ -146,8 +132,16 @@ function TaskApp({ tasks, input, setInput, addTask, toggleTask, deleteTask, sign
 
       <Routes>
         <Route path="/" element={
-          <ActivePage tasks={tasks} input={input} setInput={setInput}
-            addTask={addTask} onToggle={toggleTask} onDelete={deleteTask} />
+          <ActivePage
+            tasks={tasks}
+            input={input}
+            setInput={setInput}
+            dueDate={dueDate}
+            setDueDate={setDueDate}
+            addTask={addTask}
+            onToggle={toggleTask}
+            onDelete={deleteTask}
+          />
         } />
         <Route path="/completed" element={
           <CompletedPage tasks={tasks} onToggle={toggleTask} onDelete={deleteTask} />

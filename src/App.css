@@ -229,8 +229,71 @@ nav a.active {
 
 form {
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
+}
+
+.add-task-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.add-task-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.due-label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.date-input {
+  flex: none;
+  width: auto;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.78rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  color-scheme: dark;
+}
+
+.date-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.clear-date {
+  all: unset;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: color var(--transition);
+  transform: none;
+  box-shadow: none;
+  background: transparent;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+}
+
+.clear-date:hover {
+  color: var(--danger);
+  transform: none;
+  box-shadow: none;
+  background: transparent;
 }
 
 input {
@@ -321,6 +384,29 @@ li.done {
   opacity: 0.55;
 }
 
+.task-body {
+  flex: 1;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  user-select: none;
+  min-width: 0;
+}
+
+.task-text {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+li.done .task-text {
+  text-decoration: line-through;
+  color: var(--done-text);
+}
+
+/* Legacy span selector kept for safety */
 li span {
   flex: 1;
   cursor: pointer;
@@ -334,6 +420,43 @@ li span {
 li.done span {
   text-decoration: line-through;
   color: var(--done-text);
+}
+
+/* ── Due date badges ───────────────────────── */
+
+.due-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid;
+  width: fit-content;
+}
+
+.due-overdue {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: var(--danger-dim);
+}
+
+.due-today {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.due-soon {
+  color: var(--text-muted);
+  border-color: var(--border-light);
+  background: transparent;
+}
+
+.due-future {
+  color: var(--text-muted);
+  border-color: var(--border);
+  background: transparent;
 }
 
 li button {
