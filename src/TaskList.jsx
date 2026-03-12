@@ -11,6 +11,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
+import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import TaskItem from './TaskItem'
 
 function TaskList({ tasks, onToggle, onDelete, onReorder }) {
@@ -63,7 +64,7 @@ function TaskList({ tasks, onToggle, onDelete, onReorder }) {
 
       {/* DragOverlay renders outside the list, on top of everything.
           It shows a floating copy of the dragged item while dragging. */}
-      <DragOverlay dropAnimation={{
+      <DragOverlay modifiers={[snapCenterToCursor]} dropAnimation={{
         duration: 260,
         easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.12)',
       }}>
