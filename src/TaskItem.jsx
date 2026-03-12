@@ -27,8 +27,9 @@ function TaskItem({ task, onToggle, onDelete, isOverlay = false }) {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    // Only apply transition on non-overlay items (the ones that shift aside)
-    transition: isOverlay ? undefined : transition,
+    // Replace dnd-kit's default 'ease' with a smooth deceleration curve
+    // so adjacent items glide aside with physical weight, not a mechanical snap
+    transition: isOverlay ? undefined : (transition ? 'transform 220ms cubic-bezier(0.25, 1, 0.5, 1)' : undefined),
   }
 
   const due = parseDueDate(task.due_at)
