@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import {
   DndContext,
   closestCenter,
   PointerSensor,
   useSensor,
   useSensors,
+  DragOverlay,
 } from '@dnd-kit/core'
 import {
   SortableContext,
@@ -12,25 +14,40 @@ import {
 import TaskItem from './TaskItem'
 
 function TaskList({ tasks, onToggle, onDelete, onReorder }) {
-  // PointerSensor works for both mouse and touch.
-  // activationConstraint prevents accidental drags when clicking.
+  // activeTask tracks which item is being dragged so we can
+  // render it inside DragOverlay (the floating ghost copy)
+  const [activeTask, setActiveTask] = useState(null)
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 5 },
     })
   )
 
+  function handleDragStart({ active }) {
+    // Find the full task object so DragOverlay can render it
+    setActiveTask(tasks.find(t => t.id === active.id) ?? null)
+  }
+
   function handleDragEnd({ active, over }) {
-    // active = item being dragged, over = item it was dropped on
+    setActiveTask(null)
     if (over && active.id !== over.id) {
       onReorder(active.id, over.id)
     }
   }
 
+  function handleDragCancel() {
+    setActiveTask(null)
+  }
+
   return (
-    // DndContext manages all drag state for the list
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      {/* SortableContext tracks the current order by ID array */}
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
+    >
       <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
         <ul>
           {tasks.map(task => (
@@ -43,6 +60,22 @@ function TaskList({ tasks, onToggle, onDelete, onReorder }) {
           ))}
         </ul>
       </SortableContext>
+
+      {/* DragOverlay renders outside the list, on top of everything.
+          It shows a floating copy of the dragged item while dragging. */}
+      <DragOverlay dropAnimation={{
+        duration: 180,
+        easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+      }}>
+        {activeTask ? (
+          <TaskItem
+            task={activeTask}
+            onToggle={() => {}}
+            onDelete={() => {}}
+            isOverlay
+          />
+        ) : null}
+      </DragOverlay>
     </DndContext>
   )
 }

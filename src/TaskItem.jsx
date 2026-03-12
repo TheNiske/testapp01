@@ -15,29 +15,33 @@ function parseDueDate(dateStr) {
   return { label: formatted, status: 'future' }
 }
 
-function TaskItem({ task, onToggle, onDelete }) {
-  // useSortable gives us everything needed to make this item draggable
+function TaskItem({ task, onToggle, onDelete, isOverlay = false }) {
   const {
-    attributes,   // accessibility attributes (aria-*)
-    listeners,    // drag event listeners (attached to the handle only)
-    setNodeRef,   // ref to attach to the DOM element
-    transform,    // current drag position offset
-    transition,   // smooth animation back to rest
-    isDragging,   // true while this item is being dragged
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
   } = useSortable({ id: task.id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    // Only apply transition on non-overlay items (the ones that shift aside)
+    transition: isOverlay ? undefined : transition,
   }
 
   const due = parseDueDate(task.due_at)
 
   return (
     <li
-      ref={setNodeRef}
+      ref={isOverlay ? undefined : setNodeRef}
       style={style}
-      className={[task.done ? 'done' : '', isDragging ? 'dragging' : ''].join(' ').trim()}
+      className={[
+        task.done ? 'done' : '',
+        isDragging ? 'dragging' : '',
+        isOverlay ? 'drag-overlay' : '',
+      ].filter(Boolean).join(' ')}
     >
       {/* Drag handle — listeners here so clicking task text still toggles */}
       <button className="drag-handle" {...attributes} {...listeners} tabIndex={-1}>

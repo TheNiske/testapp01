@@ -491,9 +491,19 @@ li.done span {
 }
 
 li.dragging {
-  opacity: 0.4;
+  opacity: 0.3;
+  border-left-color: var(--border);
+  background: var(--surface);
+}
+
+/* The floating copy that follows the cursor */
+li.drag-overlay {
+  opacity: 1;
   border-left-color: var(--accent);
   background: var(--surface-2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+  scale: 1.02;
+  cursor: grabbing;
 }
 
 li button {
